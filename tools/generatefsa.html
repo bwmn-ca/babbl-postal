@@ -16,6 +16,26 @@
             font-size: 14px;
             line-height: 1.5;
         }
+        #progressBarContainer {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #f3f3f3;
+            height: 30px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #progressBar {
+            width: 0;
+            height: 100%;
+            background-color: green;
+        }
+        #progressText {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -25,6 +45,11 @@
     <button onclick="generatePostalCodes()">Generate Postal Codes</button>
 
     <div id="postalCodes"></div>
+    
+    <div id="progressBarContainer">
+        <div id="progressBar"></div>
+        <div id="progressText">0%</div>
+    </div>
 
     <script>
         function generatePostalCodes() {
@@ -37,20 +62,52 @@
                 return;
             }
 
-            // Define the range of characters for the second and third parts of the postal code
-            var secondPart = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-            var thirdPart = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+            // Define letters and numbers
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            const numbers = '0123456789'.split('');
 
-            // Generate all combinations of second and third parts
-            var postalCodes = [];
-            for (var i = 0; i < secondPart.length; i++) {
-                for (var j = 0; j < thirdPart.length; j++) {
-                    postalCodes.push(fsa + ' ' + secondPart[i] + thirdPart[j] + ',');
-                }
+            // Total possible combinations (26 letters * 10 numbers for each position)
+            const totalCombinations = Math.pow(26, 3) * Math.pow(10, 3); // 26^3 * 10^3
+
+            let postalCodes = [];
+            let completedCombinations = 0;
+
+            // Function to update progress bar
+            function updateProgress() {
+                const progress = (completedCombinations / totalCombinations) * 100;
+                document.getElementById("progressBar").style.width = progress + "%";
+                document.getElementById("progressText").innerText = Math.round(progress) + "%";
             }
 
-            // Display the postal codes with commas at the end
-            document.getElementById("postalCodes").textContent = postalCodes.join("\n");
+            // Generate all combinations of the second part (LETTER NUMBER LETTER NUMBER LETTER NUMBER)
+            let index = 0;
+            let chunkSize = 1000; // Generate in chunks of 1000 for smoother progress updates
+            let interval = setInterval(function() {
+                // Process chunk
+                for (let i = index; i < index + chunkSize && i < totalCombinations; i++) {
+                    let l1 = letters[Math.floor(i / (Math.pow(10, 5))) % 26];
+                    let n1 = numbers[Math.floor(i / (Math.pow(10, 4))) % 10];
+                    let l2 = letters[Math.floor(i / (Math.pow(10, 3))) % 26];
+                    let n2 = numbers[Math.floor(i / (Math.pow(10, 2))) % 10];
+                    let l3 = letters[Math.floor(i / (Math.pow(10, 1))) % 26];
+                    let n3 = numbers[i % 10];
+
+                    postalCodes.push(`${fsa} ${l1}${n1}${l2}${n2}${l3}${n3},`);
+                    completedCombinations++;
+                }
+
+                // Update progress
+                updateProgress();
+
+                // If all combinations are processed, stop the interval
+                if (completedCombinations >= totalCombinations) {
+                    clearInterval(interval);
+                    document.getElementById("postalCodes").textContent = postalCodes.join("\n");
+                }
+
+                index += chunkSize; // Move to the next chunk
+            }, 10); // Update progress every 10 milliseconds (adjust for performance)
+
         }
     </script>
 </body>
