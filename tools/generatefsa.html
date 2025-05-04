@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postal Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #postalCodes {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+  <body>
+    <h1>Postal Code Generator</h1>
+    <label for="fsa">Enter FSA (e.g., L1T): </label>
+    <input type="text" id="fsa" maxlength="3" placeholder="FSA">
+    <button onclick="generatePostalCodes()">Generate Postal Codes</button>
+
+    <div id="postalCodes"></div>
+
+    <script>
+        function generatePostalCodes() {
+            // Get FSA input
+            var fsa = document.getElementById("fsa").value.toUpperCase().trim();
+
+            // Check if FSA is valid (3 characters)
+            if (fsa.length !== 3) {
+                alert("Please enter a valid 3-character FSA.");
+                return;
+            }
+
+            // Define the range of characters for the second and third parts of the postal code
+            var secondPart = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+            var thirdPart = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+            // Generate all combinations of second and third parts
+            var postalCodes = [];
+            for (var i = 0; i < secondPart.length; i++) {
+                for (var j = 0; j < thirdPart.length; j++) {
+                    postalCodes.push(fsa + ' ' + secondPart[i] + thirdPart[j] + ',');
+                }
+            }
+
+            // Display the postal codes
+            document.getElementById("postalCodes").textContent = postalCodes.join("\n");
+        }
+    </script>
+</body>
+</html>
