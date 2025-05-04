@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Postal Code Generator</title>
+    <title>Postal Code Generator with Range</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,10 +18,28 @@
         }
     </style>
 </head>
-  <body>
-    <h1>Postal Code Generator</h1>
+<body>
+    <h1>Postal Code Generator with Range</h1>
     <label for="fsa">Enter FSA (e.g., L1T): </label>
     <input type="text" id="fsa" maxlength="3" placeholder="FSA">
+    <br><br>
+    
+    <label for="startSecond">Start Second Part (e.g., 0): </label>
+    <input type="text" id="startSecond" maxlength="1" placeholder="0">
+    
+    <label for="startThird">Start Third Part (e.g., 0): </label>
+    <input type="text" id="startThird" maxlength="1" placeholder="0">
+    
+    <br><br>
+    
+    <label for="endSecond">End Second Part (e.g., 9): </label>
+    <input type="text" id="endSecond" maxlength="1" placeholder="9">
+    
+    <label for="endThird">End Third Part (e.g., 9): </label>
+    <input type="text" id="endThird" maxlength="1" placeholder="9">
+    
+    <br><br>
+    
     <button onclick="generatePostalCodes()">Generate Postal Codes</button>
 
     <div id="postalCodes"></div>
@@ -31,9 +49,21 @@
             // Get FSA input
             var fsa = document.getElementById("fsa").value.toUpperCase().trim();
 
+            // Get the range values for the second and third parts
+            var startSecond = document.getElementById("startSecond").value.toUpperCase().trim();
+            var startThird = document.getElementById("startThird").value.toUpperCase().trim();
+            var endSecond = document.getElementById("endSecond").value.toUpperCase().trim();
+            var endThird = document.getElementById("endThird").value.toUpperCase().trim();
+
             // Check if FSA is valid (3 characters)
             if (fsa.length !== 3) {
                 alert("Please enter a valid 3-character FSA.");
+                return;
+            }
+
+            // Check if the range inputs are valid (single characters)
+            if (startSecond.length !== 1 || startThird.length !== 1 || endSecond.length !== 1 || endThird.length !== 1) {
+                alert("Please enter valid single character range values.");
                 return;
             }
 
@@ -41,10 +71,22 @@
             var secondPart = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
             var thirdPart = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
-            // Generate all combinations of second and third parts
+            // Find the index of start and end characters in the lists
+            var startSecondIndex = secondPart.indexOf(startSecond);
+            var startThirdIndex = thirdPart.indexOf(startThird);
+            var endSecondIndex = secondPart.indexOf(endSecond);
+            var endThirdIndex = thirdPart.indexOf(endThird);
+
+            // Validate the input range
+            if (startSecondIndex === -1 || startThirdIndex === -1 || endSecondIndex === -1 || endThirdIndex === -1) {
+                alert("Invalid range values.");
+                return;
+            }
+
+            // Generate postal codes for the specified range
             var postalCodes = [];
-            for (var i = 0; i < secondPart.length; i++) {
-                for (var j = 0; j < thirdPart.length; j++) {
+            for (var i = startSecondIndex; i <= endSecondIndex; i++) {
+                for (var j = startThirdIndex; j <= endThirdIndex; j++) {
                     postalCodes.push(fsa + ' ' + secondPart[i] + thirdPart[j] + ',');
                 }
             }
